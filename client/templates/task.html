@@ -1,0 +1,86 @@
+<nav class="navbar navbar-inverse navbar-fixed-top" style="height:initial;">
+	<div class="container">
+		<div class="navbar-header pull-left">
+			<a class="navbar-brand" href="#/">ToDo App</a>
+			
+		</div>
+		<a class="navbar-brand pull-right" href="/logout" >Logout</a>
+	</div>
+</nav>
+
+<div class="container content">
+	<!-- Add New Task -->
+	<div class="row">
+		
+		<div class="col-md-6">
+			
+			<div class="add_task">
+				<form ng-submit="addTask()">
+							<!-- <i class="material-icons prefix">account_circle</i> -->
+							<input type="text" class="form-control input-lg" ng-model="task.task" name="body" placeholder="Add your new task to the list.." style="height: 3.5em;" required="required" autofocus>
+							<!-- <i class="material-icons prefix">account_circle</i> -->
+							<br>
+							<div class="row">
+								<div class="col-md-6">
+									<input type="text" class="form-control" id="location" placeholder="Location" ng-model="task.location"  style="height: 3.5em;" >
+								</div>
+								<div class="col-md-6">
+									
+									<datetimepicker 
+										min-date="minDate" hour-step="hourStep" 
+								      	minute-step="minuteStep" ng-model="date" 
+								      	show-meridian="showMeridian" 
+								      	date-format="dd-MMM-yyyy" date-options="dateOptions"
+								      	readonly-date="false"
+								      	hidden-time="false"
+								      	hidden-date="false" 
+								      	show-spinners="false"
+								      	readonly-time="false">
+									</datetimepicker>
+									
+								</div>
+							</div>
+							<br>
+							<button type="submit" class="btn btn-success btn-lg" name="addTask" style="width:100%">Add Task</button>
+				</form>
+			</div>
+			
+			
+		</div>
+		
+		<div id="maps" class="col-md-6" style="height:200px; text-align:center;">Loading map...</div>
+		
+	</div>
+	
+	<!-- Task List -->
+	<div class="task_list">
+		<table class="table table-hover table-striped">
+			<thead>
+				<tr>
+					<th class="col s1"><span style="">#</span></th>
+					<th class="col s4"><span style="">Tasks</span></th>
+					<th class="col s4"><span style="">Location</span></th>
+					<th class="col s2"><span style="">Due Time</span></th>
+					<th class="col s1 cbox"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="taskId{{$index}}" ng-repeat="task in tasks.slice().reverse()">
+					<td class="col-md-1">
+						<input type="checkbox" id="task{{$index}}" ng-checked="{{task.status}}" ng-click="changeTaskStatus(task)" style="font-size:2em;" />
+					</td>
+					<td class="col-md-4">
+					    <label for="task{{$index}}" id="taskLabel{{$index}}" ng-class="{'done': task.status == 1}" >
+							<span> {{task.task}}</span>
+						</label>
+					</td>
+					<td class="col-md-4"><label id="locationLabel{{$index}}" ng-class="{'done': task.status == 1}"><span>{{task.location}}<span></label></td>
+					<td class="col-md-2"><label id="dueDateLabel{{$index}}" ng-class="{'done': task.status == 1}"><span>{{task.due_date}}<span></label></td>
+					<td class="col-md-1 cbox">
+						<a href="javascript:void(0);" class="btn-floating red" ng-click="deleteTask(task)"><i class="glyphicon glyphicon-remove" aria-hidden="true" style="font-size:1.5rem;"></i></a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

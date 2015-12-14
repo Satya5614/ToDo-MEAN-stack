@@ -8,10 +8,17 @@ var passportLocal = require('passport-local').Strategy;
 var passportHttp = require("passport-http");
 
 var app = express();
-var userDb = mongojs('user', ['user']);
-var todoDb = mongojs('todo', ['todo']);
 
+var userDb;
+var todoDb;
 
+if(process.env.MONGOLAB_URI){
+  userDb = mongojs(process.env.MONGOLAB_URI, ['user']);
+  todoDb = mongojs(process.env.MONGOLAB_URI, ['todo']);
+}else{
+  userDb = mongojs('user', ['user']);
+  todoDb = mongojs('todo', ['todo']);
+}
 
 app.use(express.static(__dirname + "/client"));
 

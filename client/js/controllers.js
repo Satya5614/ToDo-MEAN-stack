@@ -64,7 +64,7 @@ app.controller('taskCtrl', function ($scope, $http, $location, AuthFactory) {
 	}
 	
 	$scope.changeTaskStatus = function(task) {
-		var index = $scope.tasks.indexOf(task);
+		var index = $scope.tasks.slice().reverse().indexOf(task);
 		$("#taskId"+index+" label").toggleClass("done");
 		task.status == 0 ? task.status = 1 : task.status = 0;
 		$http.put('/task/'+task._id, task).success(function(response) {

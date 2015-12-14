@@ -6,14 +6,10 @@ var expressSession = require("express-session");
 var passport = require('passport');
 var passportLocal = require('passport-local').Strategy;
 var passportHttp = require("passport-http");
-var Scheduler = require('mongo-scheduler');
 
 var app = express();
 var userDb = mongojs('user', ['user']);
 var todoDb = mongojs('todo', ['todo']);
-var schedulerDb = mongojs('scheduler', ['scheduler']);
-var options = {pollInterval: 60000};
-var scheduler = new Scheduler(schedulerDb, options);
 
 
 
@@ -108,17 +104,6 @@ app.get('/task', isAuthenticated, function(req, res) {
 
 app.post('/task', isAuthenticated, function(req, res) {
   todoDb.todo.insert(req.body, function(err, doc) {
-    var t = new Date();
-    console.log('t', t);
-    var event = {name: doc._id, collection: 'todo', after: new Date(t.getTime() + 2*60000), data: doc.task};
-    scheduler.schedule(event, function() {
-      console.log("Event Scheduled");
-    });
-    
-    scheduler.on(doc._id, function(data, event) {
-      console.log(event.data);
-    });
-    
     res.json(doc);
   })
 });

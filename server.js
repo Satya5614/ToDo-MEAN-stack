@@ -6,9 +6,18 @@ var expressSession = require("express-session");
 var passport = require('passport');
 var passportLocal = require('passport-local').Strategy;
 var passportHttp = require("passport-http");
+var schedule = require('node-schedule');
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+    service: 'SendGrid',
+    auth: {
+      user: process.env.SENDGRID_USERNAME,
+      pass: process.env.SENDGRID_PASSWORD
+    }
+});
 
 var app = express();
-
 var userDb;
 var todoDb;
 
@@ -50,6 +59,27 @@ function userAuth(username, password, done){
       return done(null, false, { message: 'Incorrect password.' });
     }
     return done(null, user);
+  });
+}
+
+function sendRemainderEmail(task){
+  userDb.user.findOne({ _id: mongojs.ObjectId(task.user_id) }, function(err, user) {
+    console.log(err);
+    
+    var body = 'Hi, <br/>You have a task "'+task.task+'" scheduled for '+task.due_date+' at "'+task.location+'" <br/> Regards,<br/>Satya';
+    var mailOptions = {
+      from: 'Satya <satya9731@gmail.com>',
+      to: user.username,
+      subject: 'Task Remainder',
+      text: '',
+      html: body
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+      if(error){
+          return console.log(error);
+      }
+      console.log('Message sent: ' + info.response);
+    });
   });
 }
 
@@ -111,6 +141,15 @@ app.get('/task', isAuthenticated, function(req, res) {
 
 app.post('/task', isAuthenticated, function(req, res) {
   todoDb.todo.insert(req.body, function(err, doc) {
+    var due_time = new Date(doc.due_date);
+    var remainder_time = new Date(due_time.setMinutes(due_time.getMinutes()-5));
+    var current_time = new Date();
+    if((remainder_time.getTime()-current_time.getTime())>60000){
+      console.log("Remainder Time", remainder_time);
+      var j = schedule.scheduleJob(remainder_time, function(){
+        sendRemainderEmail(doc);
+      });
+    }
     res.json(doc);
   })
 });

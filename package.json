@@ -11,11 +11,11 @@
     "cookie-parser": "^1.4.0",
     "express": "~3.2.4",
     "express-session": "^1.12.1",
-    "mongo-scheduler": "^1.1.5",
     "mongojs": "^2.1.0",
+    "node-schedule": "^0.6.0",
+    "nodemailer": "^1.10.0",
     "passport": "^0.3.2",
     "passport-http": "^0.3.0",
-    "passport-local": "^1.0.0",
-    "socket.io": "~0.9.14"
+    "passport-local": "^1.0.0"
   }
 }
